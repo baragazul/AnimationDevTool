@@ -1,0 +1,16 @@
+[
+  {
+    "id": "$dummyfolder00",
+    "type": "category",
+    "frames": [null],
+    "hidden": "true"
+  },
+  {
+    "id": "$dummy_generator_00",
+    "title": "Animation Dev. Tool",
+    "text": "Attach a night lights or animation to your plugin easily.",
+    "author": "ian`",
+    "type": "tool",
+    "script": "dummy.lua"
+  }
+]
