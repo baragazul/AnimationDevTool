@@ -270,10 +270,10 @@ local function convert(type)
   toFile:clear()
 end
 
--- create array of light animation ids.
+-- create an array of light animation ids.
 local lightDrafts = Array{'1x1l', '1x2l', '1x3l', '1x4l', '1x4lsmth', '1x4lsmth_weird', '2x2l', '2x2_ltr', '2x2_rtl', '2x3l', '2x3butnot', '2x3butnotandflipped', '2x4l', '3x2l', '3x2l_WEIRD', '3x2l_right_1', '3x3l_right_1', '3x3_ltr', '3x3_rtl', '3x4l', '3x4_uh', '3x4_uh_side', '3x6_iso', '3x6_iso_side', '4x2', '4x2_side', '4x3l', '4x3lsmth', '4x3lsmth_weird', '4x3_kluche', '4x3_kluche2', '4x3_kluche3', '4x3_kluche4', '4x4l', '4x4l2', '4x4_iso', '4x4_iso_side', '5x5l', '5x7l', '10x3l', '10x3l_side', '12x3l', '12x3l_side', '$animationblinkingredlight3x3', '$animationblinkingyellowlight3x3', '$animationblinkingwhitelight3x3', '$animationblinkinggreenlight3x3', '$animationblinkingbluelight3x3', 'BIGGA', 'cutelamp', 'cutelamp_traffoc', 'enslavedstupid', 'lamppost_night', 'lamppost_night_1', 'outacoolnames', 'somewhatweird', 'stair_ltr2', 'stair_ltr2inverted', 'stair_rtl2', 'stair_rtl2inverted', 'stair_ltr3', 'stair_rtl3'}
 
--- a function to convert direction numbers to be string
+-- function to convert direction numbers to be string
 local function directionName()
   if getDirection() == 1 then
     return 'Horizontal'
