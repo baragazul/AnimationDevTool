@@ -1,17 +1,14 @@
 local activeLayer = 1
 local buildingId = 'buildingId'
-local layer = Array{Array{1,'animationId',1,1,1,1,0,0,0,1}} -- Array with contents
-local temp = {} -- Empty table
-local toDisplay = {} -- Empty table
-local toFile = Array() -- Empty array
+local layer = Array{Array{1,'animationId',1,1,1,1,0,0,0,1}}
+local temp = {}
+local toDisplay = {}
+local toFile = Array()
 
--- create a table to store animation id from user
 local function userAnimationId()
   return Util.optStorage(TheoTown.getStorage(), 'userAnimationId')
 end
 
--- functions to facilitate access to get and set values in nested arrays
--- recommended for values that is stored on child table of table
 local function getDirection(index)
   local index = index or activeLayer
   return layer[index][1]
@@ -102,7 +99,6 @@ local function setProbability(newState)
   layer[activeLayer][10] = newState
 end
 
--- function to insert a string automatically under certain conditions
 local function probabilityText(index)
   local index = index or activeLayer
   if getProbability(index) == 1 then
@@ -112,9 +108,6 @@ local function probabilityText(index)
   end
 end
 
--- reset all values.
--- in this plugin, this function will be called
--- when the dummy draft removed
 local function reset()
   activeLayer = 1
   buildingId = 'buildingId'
@@ -122,7 +115,6 @@ local function reset()
   toDisplay = {}
 end
 
--- functions to manage a layer
 local function newLayer()
   layer:add(Array{1,'animationId',1,1,1,1,0,0,0,1})
 end
@@ -138,7 +130,6 @@ local function removeLayer(index)
   activeLayer = 1
 end
 
--- functions to calculate a raw data (integer)
 local function horizontalLights(index)
   if index == nil then
     for i=1, #layer do
@@ -203,10 +194,6 @@ local function diagonalLights(index)
   end
 end
 
--- function to update realtime display when the value is changed
--- temp table is always empty before and after proccess to save the space.
--- toDisplay table only contains light defs from the active layer
--- to prevent lagging on some devices.
 local function updateDisplay()
   temp = {}
   toDisplay = {}
@@ -227,14 +214,9 @@ local function updateDisplay()
   temp = {}
 end
 
--- function to convert a calculated data into clipboard or file.
--- clipboard has a size limitation, but simply to use.
--- save to text can handle a big size than clipboard, but has path limitation
--- on .plugin, .mpf, and .zip format.
 local function convert(type)
   temp = {}
   toFile:clear()
-  -- create a condition to prevent nil animation id inserted into clipboard or file.
   if getAnimationId() ~= 'animationId' then
     if getDirection() == 1 then
       horizontalLights()
@@ -263,17 +245,14 @@ local function convert(type)
       Debug.toast('Put the code into clipboard')
     end
   else
-    -- show a message when animation id is nil
     Debug.toast('Err : animation id is nil')
   end
   temp = {}
   toFile:clear()
 end
 
--- create an array of light animation ids.
 local lightDrafts = Array{'1x1l', '1x2l', '1x3l', '1x4l', '1x4lsmth', '1x4lsmth_weird', '2x2l', '2x2_ltr', '2x2_rtl', '2x3l', '2x3butnot', '2x3butnotandflipped', '2x4l', '3x2l', '3x2l_WEIRD', '3x2l_right_1', '3x3l_right_1', '3x3_ltr', '3x3_rtl', '3x4l', '3x4_uh', '3x4_uh_side', '3x6_iso', '3x6_iso_side', '4x2', '4x2_side', '4x3l', '4x3lsmth', '4x3lsmth_weird', '4x3_kluche', '4x3_kluche2', '4x3_kluche3', '4x3_kluche4', '4x4l', '4x4l2', '4x4_iso', '4x4_iso_side', '5x5l', '5x7l', '10x3l', '10x3l_side', '12x3l', '12x3l_side', '$animationblinkingredlight3x3', '$animationblinkingyellowlight3x3', '$animationblinkingwhitelight3x3', '$animationblinkinggreenlight3x3', '$animationblinkingbluelight3x3', 'BIGGA', 'cutelamp', 'cutelamp_traffoc', 'enslavedstupid', 'lamppost_night', 'lamppost_night_1', 'outacoolnames', 'somewhatweird', 'stair_ltr2', 'stair_ltr2inverted', 'stair_rtl2', 'stair_rtl2inverted', 'stair_ltr3', 'stair_rtl3'}
 
--- function to convert direction numbers to be string
 local function directionName()
   if getDirection() == 1 then
     return 'Horizontal'
@@ -286,12 +265,10 @@ local function directionName()
   end
 end
 
--- cache the global function and make it short
 local function master()
   return GUI.getRoot()
 end
 
--- suspend / pause mode when enter the tools
 local lastSpeed
 local function enterTool()
   lastSpeed = City.getSpeed()
@@ -305,7 +282,6 @@ local function enterTool()
   GUI.get'sidebarLine':setVisible(false)
 end
 
--- return to the last conditions when exit the tools
 local function exitTool()
   City.setSpeed(lastSpeed)
   lastSpeed = nil
@@ -318,7 +294,6 @@ local function exitTool()
   GUI.get'sidebarLine':setVisible(true)
 end
 
--- convert a building id into the title of draft or some text if no valid id
 local function buildingIdText()
   if Draft.getDraft(buildingId) == nil then
     return 'Please enter the building id'
@@ -327,19 +302,13 @@ local function buildingIdText()
   end
 end
 
--- declares the variable used in a function
--- to make it can be called outside of the function.
--- in this case, to delete the gui.
 local base
 
--- main function of this tool that is contains input(set function)
--- and output(get function, realtime display, save and copy to clipboard).
 local function showLightsDevTool()
   updateDisplay()
 
   base = master():addLayout{vertical=true,spacing=1}
 
-  -- create a title and buttons layout like build mode.
   local titleRow = base:addLayout{h=111,vertical=true,spacing=0}
 
   local function addTitleRowEntry(tbl)
@@ -438,7 +407,6 @@ local function showLightsDevTool()
     end
   }
 
-  -- create a controls layout.
   local mainRow = base:getLastPart():addLayout{h=108,spacing=1}
 
   local leftSidebar = mainRow:getFirstPart():addLayout{w=160,vertical=true,spacing=2}
@@ -478,19 +446,55 @@ local function showLightsDevTool()
       frameDown = NinePatch.BLUE_BUTTON_PRESSED,
       onUpdate = tbl.onUpdate,
       onClick = function()
-        GUI.createRenameDialog{
-          icon = Icon.EDIT,
-          title = tbl.renameTitle,
-          text = tbl.renameText,
-          value = tbl.value,
-          okText = 'Enter',
-          cancelText = 'Cancel',
-          onOk = tbl.onOk,
-          onCancel = function() end,
-          filter = function(value)
-            return value:len() > 0 and tonumber(value) >= tbl.minValue and tonumber(value) <= tbl.maxValue
-          end
-        }
+        if Runtime.getVersionCode() >= 1942 then
+          GUI.createRenameDialog{
+            icon = Icon.EDIT,
+            title = tbl.renameTitle,
+            text = tbl.renameText,
+            value = '',
+            okText = 'Enter',
+            cancelText = 'Cancel',
+            onOk = tbl.onOk,
+            onCancel = function() end,
+            filter = function(value)
+              return value:len() > 0 and tonumber(value) >= tbl.minValue and tonumber(value) <= tbl.maxValue
+            end
+          }
+        else
+          local textField
+          GUI.createDialog{
+            icon = Icon.EDIT,
+            title = tbl.renameTitle,
+            text = tbl.renameText,
+            onUpdate = function()
+              value = textField:getText(),
+              GUI.get'$cmdOkButton':setEnabled(textField:getText():len() > 0 and tonumber(textField:getText()) >= tbl.minValue and tonumber(textField:getText()) <= tbl.maxValue)
+            end,
+            onInit = function(dialog)
+              textField = dialog.content:addTextField{
+                y = Font.DEFAULT:getHeight()*2.25,
+                h = 24,
+                text = ''
+              }
+            end,
+            actions = {
+              {
+                icon = Icon.CANCEL,
+                text = 'Cancel'
+              },
+              {
+                id = '$cmdOkButton',
+                icon = Icon.OK,
+                text = 'Enter',
+                golden = true,
+                onClick = function()
+                  tbl.var(textField:getText())
+                  updateDisplay()
+                end
+              }
+            }
+          }
+        end
       end
     }
     local textLabel = displayButton:addLabel{
@@ -532,11 +536,11 @@ local function showLightsDevTool()
     end,
     renameTitle = 'Set Column',
     renameText = 'Enter number for column.',
-    value = '',
     onOk = function(value)
       setColumn(value)
       updateDisplay()
     end,
+    var = setColumn,
     textLabelOnUpdate = function(self)
       self:setText(getColumn())
       self:setAlignment(0.5,0.5)
@@ -567,6 +571,7 @@ local function showLightsDevTool()
       setAbsX(value)
       updateDisplay()
     end,
+    var = setAbsX,
     textLabelOnUpdate = function(self)
       self:setText(getAbsX())
       self:setAlignment(0.5,0.5)
@@ -600,6 +605,7 @@ local function showLightsDevTool()
       setDiffX(value)
       updateDisplay()
     end,
+    var = setDiffX,
     textLabelOnUpdate = function(self)
       self:setText(getDiffX())
       self:setAlignment(0.5,0.5)
@@ -627,6 +633,7 @@ local function showLightsDevTool()
     onOk = function(value)
       setProbability(value)
     end,
+    var = setProbability,
     textLabelOnUpdate = function(self)
       self:setText(getProbability())
       self:setAlignment(0.5,0.5)
@@ -640,21 +647,55 @@ local function showLightsDevTool()
       self:setText(buildingIdText())
     end,
     onClick = function()
-      GUI.createRenameDialog{
-        icon = Icon.EDIT,
-        title = 'Enter Building Id',
-        text = 'Please enter the building id that will be used.',
-        value = '',
-        okText = 'Enter',
-        cancelText = 'Cancel',
-        onOk = function(value)
-          buildingId = value
-        end,
-        onCancel = function() end,
-        filter = function(value)
-          return Draft.getDraft(value) ~= nil
-        end
-      }
+      if Runtime.getVersionCode() >= 1942 then
+        GUI.createRenameDialog{
+          icon = Icon.EDIT,
+          title = 'Enter Building Id',
+          text = 'Please enter the building id that will be used.',
+          value = '',
+          okText = 'Enter',
+          cancelText = 'Cancel',
+          onOk = function(value)
+            buildingId = value
+          end,
+          onCancel = function() end,
+          filter = function(value)
+            return Draft.getDraft(value) ~= nil
+          end
+        }
+      else
+        local textField
+        GUI.createDialog{
+          icon = Icon.EDIT,
+          title = 'Enter Building Id',
+          text = 'Please enter the building id that will be used.',
+          onInit = function(dialog)
+            textField = dialog.content:addTextField{
+              y = Font.DEFAULT:getHeight()*2.25,
+              h = 24,
+              text = ''
+            }
+          end,
+          actions = {
+            {
+              icon = Icon.CANCEL,
+              text = 'Cancel'
+            },
+            {
+              id = '$cmdOkButton',
+              icon = Icon.OK,
+              text = 'Enter',
+              golden = true,
+              onClick = function()
+                buildingId = textField:getText()
+              end
+            }
+          },
+          onUpdate = function()
+            GUI.get'$cmdOkButton':setEnabled(Draft.getDraft(textField:getText()) ~= nil)
+          end
+        }
+      end
     end
   }
 
@@ -772,23 +813,59 @@ local function showLightsDevTool()
           frameDefault = NinePatch.BLUE_BUTTON,
           frameDown = NinePatch.BLUE_BUTTON_PRESSED,
           onClick = function()
-            GUI.createRenameDialog{
-              icon = Icon.PLUS,
-              title = 'Add New Animation',
-              text = 'Please insert animation id.',
-              okText = 'Add',
-              cancelText = 'Close',
-              value = '',
-              onOk = function(value)
-                table.insert(userAnimationId(), value)
-                updateListBox()
-              end,
-              onCancel = function() end,
-              filter = function(value)
-                local draft = Draft.getDraft(value)
-                return value:len() > 0 and draft:isAnimation()
-              end
-            }
+            if Runtime.getVersionCode() >= 1942 then
+              GUI.createRenameDialog{
+                icon = Icon.PLUS,
+                title = 'Add New Animation',
+                text = 'Please insert animation id.',
+                okText = 'Add',
+                cancelText = 'Close',
+                value = '',
+                onOk = function(value)
+                  table.insert(userAnimationId(), value)
+                  updateListBox()
+                end,
+                onCancel = function() end,
+                filter = function()
+                  local draft = Draft.getDraft(textField:getText())
+                  return textField:getText():len() > 0 and draft:isAnimation()
+                end
+              }
+            else
+              local textField
+              GUI.createDialog{
+                icon = Icon.EDIT,
+                title = 'Add New Animation',
+                text = 'Please insert animation id.',
+                onInit = function(dialog)
+                  textField = dialog.content:addTextField{
+                    y = Font.DEFAULT:getHeight()*2.25,
+                    h = 24,
+                    text = ''
+                  }
+                end,
+                actions = {
+                  {
+                    icon = Icon.CANCEL,
+                    text = 'Cancel'
+                  },
+                  {
+                    id = '$cmdOkButton',
+                    icon = Icon.OK,
+                    text = 'Enter',
+                    golden = true,
+                    onClick = function()
+                      table.insert(userAnimationId(), textField:getText())
+                      updateListBox()
+                    end,
+                  }
+                },
+                onUpdate = function()
+                  local draft = Draft.getDraft(textField:getText())
+                  GUI.get'$cmdOkButton':setEnabled(textField:getText():len() > 0 and draft:isAnimation())
+                end
+              }
+            end
           end
         }
       end
@@ -813,19 +890,54 @@ local function showLightsDevTool()
       frameDown = NinePatch.BLUE_BUTTON_PRESSED,
       onUpdate = tbl.onUpdate,
       onClick = function()
-        GUI.createRenameDialog{
-          icon = Icon.EDIT,
-          title = tbl.renameTitle,
-          text = tbl.renameText,
-          value = '',
-          okText = 'Enter',
-          cancelText = 'Cancel',
-          onOk = tbl.onOk,
-          onCancel = function() end,
-          filter = function(value)
-            return value:len() > 0 and tonumber(value) >= tbl.minValue and tonumber(value) <= tbl.maxValue
-          end
-        }
+        if Runtime.getVersionCode() >= 1942 then
+          GUI.createRenameDialog{
+            icon = Icon.EDIT,
+            title = tbl.renameTitle,
+            text = tbl.renameText,
+            value = '',
+            okText = 'Enter',
+            cancelText = 'Cancel',
+            onOk = tbl.onOk,
+            onCancel = function() end,
+            filter = function(value)
+              return tbl.minValue:len() > 0 and tonumber(value) >= tbl.minValue and tonumber(value) <= tbl.maxValue
+            end
+          }
+        else
+          local textField
+          GUI.createDialog{
+            icon = Icon.EDIT,
+            title = tbl.renameTitle,
+            text = tbl.renameText,
+            onInit = function(dialog)
+              textField = dialog.content:addTextField{
+                y = Font.DEFAULT:getHeight()*2.25,
+                h = 24,
+                text = ''
+              }
+            end,
+            actions = {
+              {
+                icon = Icon.CANCEL,
+                text = 'Cancel'
+              },
+              {
+                id = '$cmdOkButton',
+                icon = Icon.OK,
+                text = 'Enter',
+                golden = true,
+                onClick = function()
+                  tbl.var(textField:getText())
+                  updateDisplay()
+                end
+              }
+            },
+            onUpdate = function()
+              GUI.get'$cmdOkButton':setEnabled(textField:getText():len() > 0 and tonumber(textField:getText()) >= tbl.minValue and tonumber(textField:getText()) <= tbl.maxValue)
+            end
+          }
+        end
       end
     }
     local textLabel = displayButton:addLabel{
@@ -885,6 +997,7 @@ local function showLightsDevTool()
       setRow(value)
       updateDisplay()
     end,
+    var = setRow,
     textLabelOnUpdate = function(self)
       self:setText(getRow())
       self:setAlignment(0.5,0.5)
@@ -915,6 +1028,7 @@ local function showLightsDevTool()
       setAbsY(value)
       updateDisplay()
     end,
+    var = setAbsY,
     textLabelOnUpdate = function(self)
       self:setText(getAbsY())
       self:setAlignment(0.5,0.5)
@@ -948,6 +1062,7 @@ local function showLightsDevTool()
       setDiffY(value)
       updateDisplay()
     end,
+    var = setDiffY,
     textLabelOnUpdate = function(self)
       self:setText(getDiffY())
       self:setAlignment(0.5,0.5)
@@ -981,6 +1096,7 @@ local function showLightsDevTool()
       setOffsetY(value)
       updateDisplay()
     end,
+    var = setOffsetY,
     textLabelOnUpdate = function(self)
       self:setText(getOffsetY())
       self:setAlignment(0.5,0.5)
@@ -1184,14 +1300,12 @@ local function showLightsDevTool()
   }
 end
 
--- reset a values of all variables when then building removed
 function script:event(x,y,level,event)
   if event == Script.EVENT_REMOVE then
     reset()
   end
 end
 
--- draw the main building and realtime display of animations
 function script:draw(tileX, tileY)
   if Draft.getDraft(buildingId) ~= nil then
     Drawing.setColor(160,160,160)
@@ -1220,8 +1334,6 @@ function script:draw(tileX, tileY)
   end
 end
 
--- turn false the default building dialog and show the gui of this tool
--- prevent a multiple dialog created when the building clicked more than once
 function script:click(x,y)
   if base == nil then
     enterTool()
@@ -1233,4 +1345,10 @@ function script:click(x,y)
     showLightsDevTool()
   end
   return false
+end
+
+function script:update()
+  if script:getDraft():getId() == '$dummy5' then
+    Drawing.drawText(tostring(layer), 0, 150)
+  end
 end
